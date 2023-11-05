@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Summarize</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="static/st.css" />
+  </head>
+  <body>
+    <div class="icon-bar">
+      <div>
+        <a class="logo" class="active" href="#"> LingoCraft </a>
+      </div>
+      <div class="inner-div">
+        <div>
+          <a class="active" href="/">Grammar</a>
+        </div>
+        <div>
+          <a class="active" href="/translate">Translation</a>
+        </div>
+        <div>
+          <a class="active" href="/summarize">Summarize</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div>
+        <!-- <h1>Enter text to Summarize</h1> -->
+        <form method="post" enctype="multipart/form-data">
+          <label id="text"
+            >Enter text to Summarize <b>or</b>
+            <button class="btn btn-info btn-sm" id="start-button">Speak</button>
+            <p></p>
+          </label>
+          <textarea
+            class="form-control"
+            placeholder="Enter text"
+            name="plaintext"
+            rows="8"
+            id="result"
+          >
+{{plain}}</textarea
+          >
+          <br />
+          <input type="submit" value="Summarize" class="btn btn-primary" />
+        </form>
+      </div>
+
+      <div>
+        <form>
+          <label id="text"
+            >Summarized text
+            <button class="btn btn-info btn-sm" id="speak-button">
+              Listen
+            </button>
+            <p></p>
+          </label>
+          <textarea class="form-control" rows="8" id="text-to-speak">
+{{outp}}</textarea
+          >
+          <br />
+          <p><b>Sentiment :- {{pol}}</b></p>
+          <p><b>Readibilty ease :- {{read}}</b></p>
+          <p><b>Word Count :- {{wc}}</b></p>
+          <p><b>Character Count :- {{cc}}</b></p>
+
+          <br />
+
+          {% if obj%}
+          <label id="text">Top 10 keywords :- </label>
+
+          <div  class="err-p">
+            {% for key, value in obj.items() %}
+            <div class="err">{{ key }} - {{ (value*100) }}%</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </form>
+        <!-- <p>{{outp}}</p> -->
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#start-button").click(function (eve) {
+          eve.preventDefault();
+          $.post("/record_audio", function (data) {
+            $("#result").val(data.text);
+          });
+        });
+
+        $("#speak-button").click(function (eve) {
+          eve.preventDefault();
+          var textToSpeak = $("#text-to-speak").val();
+          $.post(
+            "/speak",
+            {
+              text_to_speak: textToSpeak,
+            },
+            function () {}
+          );
+        });
+      });
+    </script>
+  </body>
+</html>
